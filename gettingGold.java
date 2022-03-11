@@ -1,76 +1,80 @@
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import java.math.*;
-import static java.lang.System.*;
-import static java.lang.Integer.*;
-import static java.lang.Double.*;
-import static java.lang.Math.*;
 
-			//change the class name
-public class gettingGold
-{
-	char[][] mat;
-	int[][] shadow;
-	int cnt;
-	public void go(int r,int c,int steps)
+import java.util.ArrayList;
+import java.util.Scanner;
+public class gettingGold {
+public static void main(String[] args) {
+Scanner scan = new Scanner(System.in);
+
+int c = scan.nextInt();
+int r = scan.nextInt();
+
+int gold = 0;
+
+char[][] map = new char[r][c];
+boolean[][] visit = new boolean[r][c];
+
+for (int i = 0; i < r; i++)
+	map[i] = scan.next().toCharArray();
+
+Pos start = new Pos(-1 , -1);
+
+for (int i = 0; i < r; i++)
+	for (int j = 0; j < c; j++)
+		if (map[i][j] == 'P')
+			start = new Pos(i , j);
+
+ArrayList<Pos> queue = new ArrayList<>();
+queue.add(start);
+visit[start.r][start.c] = true;
+
+while (!queue.isEmpty())
 	{
-		
-		
-		if(r < mat.length && c < mat[r].length && r >= 0 && c >= 0 && mat[r][c] != 'T' && mat[r][c] != '#' && steps <= shadow[r][c]  )
+	Pos pos = queue.remove(0);
+	
+	if (map[pos.r][pos.c] == 'G')
+		gold++;
+	
+	if (map[pos.r + 1][pos.c] == 'T' || map[pos.r - 1][pos.c] == 'T' || map[pos.r][pos.c + 1] == 'T' || map[pos.r][pos.c - 1] == 'T')
+		continue;
+	
+	if ((map[pos.r + 1][pos.c] == '.' || map[pos.r + 1][pos.c] == 'G') && !visit[pos.r + 1][pos.c])
 		{
-			char sub = mat[r][c];
-			if(mat[r][c] == 'G')
-			{
-				cnt++;
-				shadow[r][c] = steps;
-				return;
-			}
-			
-			shadow[r][c] = steps;
-			
-			go(r,c - 1,steps + 1);
-			go(r,c + 1, steps + 1);
-			go(r - 1,c,steps + 1);
-			go(r + 1,c,steps + 1);
-			//restores previous state so we don't change the entire matrix into something unrecognizable
-			mat[r][c] = sub;
+		queue.add(new Pos(pos.r + 1 , pos.c));
+		visit[pos.r + 1][pos.c] = true;
 		}
-		
-		
-	}
 	
-	public void run() throws Exception
-	{
-		Scanner file = new Scanner(System.in);
-		cnt = 0;
-		int cols = file.nextInt();
-		int rows = file.nextInt();
-		mat = new char[rows][cols];
-		shadow = new int[rows][cols];
-		for(int i = 0; i < rows; i++) {
-			mat[i] = file.next().toCharArray();
+	if ((map[pos.r - 1][pos.c] == '.' || map[pos.r - 1][pos.c] == 'G') && !visit[pos.r - 1][pos.c])
+		{
+		queue.add(new Pos(pos.r - 1 , pos.c));
+		visit[pos.r - 1][pos.c] = true;
 		}
-		for(int[] bob : shadow) {
-			for(int num : bob) {
-				num = Integer.MAX_VALUE;
-			}
+	
+	if ((map[pos.r][pos.c + 1] == '.' || map[pos.r][pos.c + 1] == 'G') && !visit[pos.r][pos.c + 1])
+		{
+		queue.add(new Pos(pos.r , pos.c + 1));
+		visit[pos.r][pos.c + 1] = true;
 		}
-		//System.out.println(Arrays.deepToString(mat));
-		for(int r = 0; r < rows; r++) {
-			for(int c = 0; c < cols; c++) {
-				if(mat[r][c] == 'P') {
-					go(r, c, 0);
-				}
-			}
+	
+	if ((map[pos.r][pos.c - 1] == '.' || map[pos.r][pos.c - 1] == 'G') && !visit[pos.r][pos.c - 1])
+		{
+		queue.add(new Pos(pos.r , pos.c - 1));
+		visit[pos.r][pos.c - 1] = true;
 		}
-		System.out.print(cnt);
 	}
 
-	public static void main(String[] args) throws Exception
-	{
-			//change this to whatever your class name is
-		new gettingGold().run();
-	}	
+System.out.println(gold);
+
+scan.close();
+	}
+}
+
+class Pos {
 	
+int r , c;
+
+public Pos(int r , int c) {
+	this.r = r;
+	this.c = c;
+}
+
 }
